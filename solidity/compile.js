@@ -26,14 +26,8 @@ const input = {
 
 
 const output = JSON.parse(solc.compile(JSON.stringify(input)));
-console.log("contractPath", contractPath)
-console.log("output", output)
 
 fs.ensureDirSync(buildPath);
 
-for (let contract in output) {
-  fs.outputJsonSync(
-  path.resolve(buildPath, contract.replace(":", "") + ".json"),
-    output[contract]
-  );
-}
+const contractFile = output.contracts['Contract.sol']['MinorityGame'];
+module.exports = contractFile;
