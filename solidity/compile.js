@@ -7,7 +7,25 @@ fs.removeSync(buildPath);
 
 const contractPath = path.resolve(__dirname, "contracts", "Contract.sol");
 const source = fs.readFileSync(contractPath, "utf8");
-const output = solc.compile(JSON.stringify(source), 1).contracts;
+
+const input = {
+  language: 'Solidity',
+  sources: {
+    'Contract.sol': {
+      content: source,
+    },
+  },
+  settings: {
+    outputSelection: {
+      '*': {
+        '*': ['*']
+      }
+    }
+  }
+};
+
+
+const output = JSON.parse(solc.compile(JSON.stringify(input)));
 console.log("contractPath", contractPath)
 console.log("output", output)
 
