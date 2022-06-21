@@ -3,7 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 
 contract MinorityGame {
-    address public gameMaster;
+    address payable public gameMaster;
     // uint public ticketPrice;
     mapping(bytes32 => bool) public commitMap;
     address payable[] public players;
@@ -19,7 +19,7 @@ contract MinorityGame {
     }
 
     constructor (){
-        gameMaster = msg.sender;
+        gameMaster = payable(msg.sender);
         ticketLimit = 5;
         Qid = 1;
     }
@@ -104,7 +104,11 @@ contract MinorityGame {
     // When distributePrize is called, winning amount is distributed to each minority winner that
     // is passed into the function.
     function distributePrize( address payable[] memory winners) public onlyGameMaster {
-        uint winningAmount = address(this).balance / winners.length;
+        // GameMaster earnings
+        uint commission = address(this).balance * 5/100;
+        gameMaster.transfer(commission);
+
+        uint winningAmount =(address(this).balance - commission) / winners.length;
         for(uint i; i < players.length; i++){
             winners[i].transfer(winningAmount);
         }
