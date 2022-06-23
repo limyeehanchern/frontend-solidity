@@ -147,18 +147,6 @@ describe("Game Contract", function () {
     assert(balance, 0);
   });
 
-  it("requires a minimum amount of ether to enter", async () => {
-    try {
-      await lottery.methods.enter().send({
-        from: accounts[0],
-        value: 200,
-      });
-      assert(false);
-    } catch (err) {
-      assert(err);
-    }
-  });
-
   it("only manager can call winner & reveal function works", async () => {
     const votesArray = [];
 
@@ -189,8 +177,10 @@ describe("Game Contract", function () {
       // Assert that ether has been submitted
       const balance = async () => {
         const bal = await web3.eth.getBalance(accounts[i]);
-        balanceEther = Math.round(web3.utils.fromWei(bal.toString(), "ether"));
-        assert(balanceEther == 90);
+        let balanceEther = Math.round(
+          web3.utils.fromWei(bal.toString(), "ether")
+        );
+        assert(balanceEther === 90);
       };
 
       await balance();
@@ -209,7 +199,7 @@ describe("Game Contract", function () {
       .call({ from: accounts[0] });
     assert.equal(playersNumber, 10);
 
-    console.log(votesArray);
+    // console.log(votesArray);
 
     // Manager calls reveal function
     await game.methods
