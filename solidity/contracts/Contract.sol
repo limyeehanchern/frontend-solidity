@@ -32,7 +32,8 @@ contract MinorityGame {
     // Vote is called by participants to commit their votes (and pay)
     function vote(bytes32 commitHash) public payable{
         //ticket price equals to amount entered
-        require(msg.value == 50000000 * 1 gwei); 
+        // require(msg.value == 50000000 * 1 gwei); // #TODO CHANGE BACK
+        require(msg.value == 10000000 gwei);
         
         // Push all player addresses to players[] for emergencyRepay
         players.push(payable(msg.sender));
@@ -42,20 +43,21 @@ contract MinorityGame {
     }
 
     // Revert function that is called when game fails for any reason
-    function emergencyRepay() public onlyGameMaster{
+    function emergencyRepay() public payable onlyGameMaster{
         for(uint i; i < players.length; i++){
-            players[i].transfer(50000000 gwei);
+            players[i].transfer(10000000 gwei);
             }
         // Resetting contract state
         players = new address payable[](0);
         Qid++;
+        return;
     }
 
     // Ends the game
     // 1. Check length of players = length of votes
     // 2. Double check votes sent in from backend against the commitMap
     // 3. If there are no discrepencies, proceed to distribute Prize
-    function reveal(Vote[] memory votes) external {
+    function reveal(Vote[] memory votes) payable external {
         // First check - length of players
         if(players.length != votes.length){
             emergencyRepay();
@@ -80,6 +82,7 @@ contract MinorityGame {
             if (commitMap[_hash] != true){
                 // Fault in commit-reveal scheme
                 emergencyRepay();
+                return;
             }
         }
         // Option 1 is the minority, payout to players that chose option 1
@@ -98,25 +101,35 @@ contract MinorityGame {
         // Resetting contract state
         players = new address payable[](0);
         Qid++;
+        return;
     }
 
 
     // When distributePrize is called, winning amount is distributed to each minority winner that
     // is passed into the function.
-    function distributePrize( address payable[] memory winners) public onlyGameMaster {
+    function distributePrize( address payable[] memory winners) internal onlyGameMaster {
         // GameMaster earnings
         uint commission = address(this).balance * 5/100;
         gameMaster.transfer(commission);
 
+        if(winners.length == 0){
+            emergencyRepay();
+        }
+
         uint winningAmount =(address(this).balance - commission) / winners.length;
-        for(uint i; i < players.length; i++){
+        for(uint i; i < winners.length; i++){
             winners[i].transfer(winningAmount);
         }
+        return;
     }
     
     // Hashing function that hashes address, option and salt
-    function hasher(address add, uint option, string memory salt) public pure returns (bytes32){
+    function hasher(address add, uint option, string memory salt) internal pure returns (bytes32){
         return keccak256(abi.encodePacked(add, option, salt));
     }
-    
+
+    // Return the number of players participating
+    function getPlayersNumber() view public returns(uint256){
+        return players.length;
+    }
 }
