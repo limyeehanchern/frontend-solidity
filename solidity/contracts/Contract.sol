@@ -33,7 +33,7 @@ contract MinorityGame {
     function vote(bytes32 commitHash) public payable{
         //ticket price equals to amount entered
         // require(msg.value == 50000000 * 1 gwei); // #TODO CHANGE BACK
-        require(msg.value == 10 ether);
+        require(msg.value == 10000000 gwei);
         
         // Push all player addresses to players[] for emergencyRepay
         players.push(payable(msg.sender));
@@ -45,7 +45,7 @@ contract MinorityGame {
     // Revert function that is called when game fails for any reason
     function emergencyRepay() public payable onlyGameMaster{
         for(uint i; i < players.length; i++){
-            players[i].transfer(10 ether);
+            players[i].transfer(10000000 gwei);
             }
         // Resetting contract state
         players = new address payable[](0);
