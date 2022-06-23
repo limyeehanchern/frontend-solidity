@@ -2,6 +2,9 @@
 
 # dependencies
 /frontend/node_modules
+/solidity/node_modules
+/solidity/.env
+/solidity/package-lock.json
 /.pnp
 .pnp.js
 
