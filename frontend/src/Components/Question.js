@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Question.css";
 
-function Question() {
-  const [participants, setParticipants] = useState(0);
+function Question({ participants }) {
   return (
     <div className="daily-question">
       <div className="question">Who was the better president?</div>

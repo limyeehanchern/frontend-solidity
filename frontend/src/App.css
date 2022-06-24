@@ -66,8 +66,7 @@ body:active {
 .App .daily-container {
   min-height: 50vh;
   width: 70vw;
-  background-color: rgb(115, 95, 255);
-  border-radius: 5px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   color: white;
@@ -77,6 +76,7 @@ body:active {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  text-align: center;
 }
 
 .App .question-date {
@@ -90,4 +90,62 @@ body:active {
   width: 100%;
   justify-content: space-evenly;
   align-self: flex-end;
+}
+
+.color1 {
+  background-color: rgb(136, 79, 186);
+  box-shadow: 0px 0px 30px rgb(136, 79, 186);
+}
+
+.color2 {
+  background-color: rgb(115, 95, 255);
+  box-shadow: 0px 0px 30px rgb(115, 95, 255);
+}
+
+.color3 {
+  background-color: rgb(249, 75, 69);
+  box-shadow: 0px 0px 30px rgb(249, 75, 69);
+}
+
+.color4 {
+  background-color: rgb(23, 166, 90);
+  box-shadow: 0px 0px 30px rgb(23, 166, 90);
+}
+.color5 {
+  background-color: rgb(23, 97, 166);
+  box-shadow: 0px 0px 30px rgb(23, 97, 166);
+}
+.color6 {
+  background-color: rgb(166, 23, 111);
+  box-shadow: 0px 0px 30px rgb(166, 23, 111);
+}
+
+.color7 {
+  background-color: rgb(166, 23, 35);
+  box-shadow: 0px 0px 30px rgb(166, 23, 35);
+}
+
+.color8 {
+  background-color: rgb(166, 154, 23);
+  box-shadow: 0px 0px 30px rgb(166, 154, 23);
+}
+
+.color9 {
+  background-color: rgb(23, 166, 142);
+  box-shadow: 0px 0px 30px rgb(23, 166, 142);
+}
+
+.color10 {
+  background-color: rgb(78, 23, 166);
+  box-shadow: 0px 0px 30px rgb(78, 23, 166);
+}
+
+.color11 {
+  background-color: rgb(23, 123, 166);
+  box-shadow: 0px 0px 30px rgb(23, 123, 166);
+}
+
+.color11 {
+  background-color: rgb(23, 123, 166);
+  box-shadow: 0px 0px 30px rgb(23, 123, 166);
 }
