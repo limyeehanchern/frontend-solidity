@@ -1,21 +1,28 @@
 const assert = require("assert");
 const ganache = require("ganache-cli");
 const Web3 = require("web3");
-// Setting number of players
-let numPlayers = 10;
-const web3 = new Web3(ganache.provider({ total_accounts: numPlayers })); // Set number of accounts
+
+// ABI and Bytecode
 const contractFile = require("../compile");
 const abi = contractFile.abi;
+const contractBytecode = contractFile.evm.bytecode.object;
 
+// Test parameters
+const SALT = "$@F#%!@@a!%x!@v#@N!#%!";
+const NUM_PLAYERS = 10;
+const TICKET_PRICE = 10000000000; // testing use 10000000000 gwei =  10 eth, actual use 10000000 gwei = 0.01 eth
 let game;
 let accounts;
-const salt = "$@F#%!@@a!%x!@v#@N!#%!";
+const web3 = new Web3(ganache.provider({ total_accounts: NUM_PLAYERS })); // Set number of accounts
 
 beforeEach(async function () {
   this.timeout(30000);
   accounts = await web3.eth.getAccounts();
   game = await new web3.eth.Contract(abi)
-    .deploy({ data: contractFile.evm.bytecode.object })
+    .deploy({
+      data: contractBytecode,
+      arguments: [TICKET_PRICE],
+    })
     .send({ gas: "5000000", from: accounts[0] });
 });
 
@@ -24,11 +31,15 @@ describe("Game Contract", function () {
   it("deploys a contract", async () => {
     // Checks that contract is deployed
     assert.ok(game.options.address);
-    const gm = await game.methods.gameMaster().call({ from: accounts[0] });
 
     // Check that gameMaster variable is correct
-    console.log(gm);
+    const gm = await game.methods.gameMaster().call({ from: accounts[0] });
+    console.log("GameMaster contract: ", gm);
     assert.equal(gm, accounts[0]);
+
+    // Check if constructor argument was well received
+    const tp = await game.methods.ticketPrice().call();
+    assert.equal(tp, TICKET_PRICE);
   });
 
   it("allows one account to vote", async () => {
@@ -36,7 +47,7 @@ describe("Game Contract", function () {
     commitHash = web3.utils.soliditySha3(
       { t: "address", v: accounts[0] },
       { t: "uint256", v: 0 },
-      { t: "string", v: salt }
+      { t: "string", v: SALT }
     );
     // Sending vote with hashed
     await game.methods
@@ -67,7 +78,7 @@ describe("Game Contract", function () {
 
   it("allows multiple accounts to enter with emergencyRepay", async () => {
     // For loop to submit votes of n players
-    for (i = 0; i < numPlayers; i++) {
+    for (i = 0; i < NUM_PLAYERS; i++) {
       // Randomise choices with biases towards option 1
       let choice;
       if (Math.random() < 0.3) {
@@ -79,7 +90,7 @@ describe("Game Contract", function () {
       commitHash = web3.utils.soliditySha3(
         { t: "address", v: accounts[i] },
         { t: "uint256", v: choice },
-        { t: "string", v: salt }
+        { t: "string", v: SALT }
       );
       await game.methods.vote(commitHash).send({
         from: accounts[i],
@@ -98,7 +109,7 @@ describe("Game Contract", function () {
 
     // Assert that players are pushed into players array in order
     let player;
-    for (i = 0; i < numPlayers; i++) {
+    for (i = 0; i < NUM_PLAYERS; i++) {
       player = await game.methods.players(i).call({ from: accounts[i] });
       assert.equal(accounts[i], player);
     }
@@ -116,7 +127,7 @@ describe("Game Contract", function () {
 
     // Assert that all funds are returned less gas fees
     const gettingBalance = async () => {
-      for (i = 0; i < numPlayers; i++) {
+      for (i = 0; i < NUM_PLAYERS; i++) {
         const balance = async () => {
           await web3.eth.getBalance(accounts[i]).then((bal) => {
             balanceEther = Math.round(
@@ -136,23 +147,11 @@ describe("Game Contract", function () {
     assert(balance, 0);
   });
 
-  it("requires a minimum amount of ether to enter", async () => {
-    try {
-      await lottery.methods.enter().send({
-        from: accounts[0],
-        value: 200,
-      });
-      assert(false);
-    } catch (err) {
-      assert(err);
-    }
-  });
-
   it("only manager can call winner & reveal function works", async () => {
     const votesArray = [];
 
     // For loop to submit votes of n players
-    for (i = 0; i < numPlayers; i++) {
+    for (i = 0; i < NUM_PLAYERS; i++) {
       // Randomise choices with biases towards option 1
       let choice;
       if (Math.random() < 0.3) {
@@ -162,12 +161,12 @@ describe("Game Contract", function () {
       }
 
       // Populating votesArray
-      votesArray.push([accounts[i].toString(), choice, salt]);
+      votesArray.push([accounts[i].toString(), choice, SALT]);
 
       commitHash = web3.utils.soliditySha3(
         { t: "address", v: accounts[i] },
         { t: "uint256", v: choice },
-        { t: "string", v: salt }
+        { t: "string", v: SALT }
       );
 
       await game.methods.vote(commitHash).send({
@@ -178,8 +177,10 @@ describe("Game Contract", function () {
       // Assert that ether has been submitted
       const balance = async () => {
         const bal = await web3.eth.getBalance(accounts[i]);
-        balanceEther = Math.round(web3.utils.fromWei(bal.toString(), "ether"));
-        assert(balanceEther == 90);
+        let balanceEther = Math.round(
+          web3.utils.fromWei(bal.toString(), "ether")
+        );
+        assert(balanceEther === 90);
       };
 
       await balance();
@@ -187,7 +188,7 @@ describe("Game Contract", function () {
 
     // Assert that players are pushed into players array in order
     let player;
-    for (i = 0; i < numPlayers; i++) {
+    for (i = 0; i < NUM_PLAYERS; i++) {
       player = await game.methods.players(i).call({ from: accounts[i] });
       assert.equal(accounts[i], player);
     }
@@ -198,7 +199,7 @@ describe("Game Contract", function () {
       .call({ from: accounts[0] });
     assert.equal(playersNumber, 10);
 
-    console.log(votesArray);
+    // console.log(votesArray);
 
     // Manager calls reveal function
     await game.methods

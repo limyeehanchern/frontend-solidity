@@ -4,7 +4,7 @@ pragma solidity ^0.8.15;
 
 contract MinorityGame {
     address payable public gameMaster;
-    // uint public ticketPrice;
+    uint public ticketPrice;
     mapping(bytes32 => bool) public commitMap;
     address payable[] public players;
     address payable[] opt0;
@@ -18,9 +18,11 @@ contract MinorityGame {
         string salt;
     }
 
-    constructor (){
+    constructor (uint _ticketPrice){
         gameMaster = payable(msg.sender);
-        ticketLimit = 5;
+        // Vote limits
+        // ticketLimit = 5;
+        ticketPrice = _ticketPrice;
         Qid = 1;
     }
 
@@ -33,7 +35,7 @@ contract MinorityGame {
     function vote(bytes32 commitHash) public payable{
         //ticket price equals to amount entered
         // require(msg.value == 50000000 * 1 gwei); // #TODO CHANGE BACK
-        require(msg.value == 10000000 gwei);
+        require(msg.value == ticketPrice * 1 gwei);
         
         // Push all player addresses to players[] for emergencyRepay
         players.push(payable(msg.sender));
@@ -45,7 +47,7 @@ contract MinorityGame {
     // Revert function that is called when game fails for any reason
     function emergencyRepay() public payable onlyGameMaster{
         for(uint i; i < players.length; i++){
-            players[i].transfer(10000000 gwei);
+            players[i].transfer(ticketPrice * 1 gwei);
             }
         // Resetting contract state
         players = new address payable[](0);
