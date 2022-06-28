@@ -4,7 +4,7 @@ import "./Question.css";
 function Question({ participants }) {
   return (
     <div className="daily-question">
-      <div className="question">Who was the better president?</div>
+      <div className="question">Who is a better president?</div>
       <div className="total-participants">
         Number of participants: {participants}
       </div>

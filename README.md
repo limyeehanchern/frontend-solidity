@@ -69,4 +69,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
-### Testing
+### Frontend
+
+https://stackoverflow.com/questions/66952972/cannot-add-web3-to-react-project?rq=1
+Refer above to fix BREAKING CHANGE problem when importing web3 to frontend

@@ -45,8 +45,8 @@ body:active {
   width: auto;
 }
 .App .dot {
-  font-size: calc(80px + 2vmin);
-  margin: 30px 20px 0px 20px;
+  font-size: calc(20px + 2vmin);
+  margin: 50px 20px 0px 20px;
 }
 
 .App .instructions {

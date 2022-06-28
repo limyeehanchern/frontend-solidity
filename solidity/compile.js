@@ -9,25 +9,24 @@ const contractPath = path.resolve(__dirname, "contracts", "Contract.sol");
 const source = fs.readFileSync(contractPath, "utf8");
 
 const input = {
-  language: 'Solidity',
+  language: "Solidity",
   sources: {
-    'Contract.sol': {
+    "Contract.sol": {
       content: source,
     },
   },
   settings: {
     outputSelection: {
-      '*': {
-        '*': ['*']
-      }
-    }
-  }
+      "*": {
+        "*": ["*"],
+      },
+    },
+  },
 };
-
 
 const output = JSON.parse(solc.compile(JSON.stringify(input)));
 
 fs.ensureDirSync(buildPath);
 
-const contractFile = output.contracts['Contract.sol']['MinorityGame'];
+const contractFile = output.contracts["Contract.sol"]["MinorityGame"];
 module.exports = contractFile;
