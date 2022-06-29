@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import Homepage from "./Components/Homepage";
+import Admin from "./Components/Admin";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -8,9 +9,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/*" element={<Homepage />} />
-        <Route exact path="/admin/postquestion" element={"postquestion"} />
-        <Route exact path="/admin/emergencyrepay" element={"emergencyrepay"} />
-        <Route exact path="/admin/reveal" element={"reveal"} />
+        <Route exact path="/admin" element={<Admin />} />
       </Routes>
     </div>
   );

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./Option.css";
 
-function OptionZero({ submitVote }) {
+function OptionZero({ submitVote, optionZero }) {
   //#TODO get question from backend
-  const [option, setOption] = useState("Trump");
+  const [option] = useState(optionZero);
   async function handleClick(e) {
     e.preventDefault();
     if (

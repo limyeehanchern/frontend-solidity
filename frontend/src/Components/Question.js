@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Question.css";
+import { getCurrentQuestion } from "../API";
 
-function Question({ participants }) {
+function Question({ participants, content }) {
   return (
     <div className="daily-question">
-      <div className="question">Who is a better president?</div>
+      <div className="question">{content}</div>
       <div className="total-participants">
         Number of participants: {participants}
       </div>

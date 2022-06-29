@@ -8,7 +8,7 @@ import Contract from "../Contract";
 import web3 from "../web3.js";
 import CircularProgress from "@mui/material/CircularProgress";
 import KeepMountedModal from "./Modal";
-import { castVote } from "../API";
+import { castVote, getCurrentQuestion, getCurrentSalt } from "../API";
 
 function Homepage() {
   const dateOptions = { day: "numeric", month: "numeric", year: "numeric" };
@@ -17,6 +17,30 @@ function Homepage() {
   );
   const [message, setMessage] = useState("");
   const [participants, setParticipants] = useState(0);
+  const [questionDetails, setQuestionDetails] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [qid, setQid] = useState();
+
+  async function getAllAccounts() {
+    const accounts = await web3.eth.getAccounts();
+    setQid(await Contract.methods.Qid().call());
+  }
+
+  getAllAccounts();
+
+  async function getQuestion(qid) {
+    if (qid === undefined) {
+      return;
+    }
+    getCurrentQuestion(qid).then((res) => {
+      setLoading(false);
+      setQuestionDetails(res.data);
+    });
+  }
+
+  useEffect(() => {
+    getQuestion(qid);
+  }, [qid]);
 
   /*
   useEffect to change participant number when user has successfully voted. The dependency array is 
@@ -31,20 +55,8 @@ function Homepage() {
   }, [message]);
 
   /*
-  emergencyRepay for testing at the moment, could possibly be included as a developer only feature on the frontend
-  */
-  async function emergencyRepay() {
-    const accounts = await web3.eth.getAccounts();
-    console.log("emergencyRepay ran");
-    await Contract.methods
-      .emergencyRepay()
-      .send({ from: accounts[0], gas: 3000000 });
-  }
-
-  /*
   Salt is currently hard coded, this salt must be stored in the database and fetched from DB to BE to FE.
   */
-  const salt = "$@F#%!@@a!%x!@v#@N!#%!";
 
   /*
   On submitVote, the message will be changed to indicate that it is loading, a commitHash string is created
@@ -54,6 +66,7 @@ function Homepage() {
   */
   const submitVote = async (option) => {
     const accounts = await web3.eth.getAccounts();
+    const salt = await getCurrentSalt(qid);
     setMessage("Waiting on transaction success...");
 
     const unix = Math.floor(Date.now() / 1000);
@@ -93,30 +106,40 @@ function Homepage() {
           <div>new questions every sunday</div>
         </div>
         <div className="main-container">
-          <div className="daily-container color1">
-            <div className="question-date">{date}</div>
-            <div className="question-option">
-              <h1>
-                <Question participants={participants} />
-              </h1>
-              <div className="daily-option">
-                <OptionZero submitVote={submitVote} />
-                <OptionOne submitVote={submitVote} />
-              </div>
-              <div>
-                {message}
-                {message === "Waiting on transaction success..." ? (
-                  <CircularProgress color="inherit" size="1em" />
-                ) : (
-                  ""
-                )}
+          {loading ? (
+            "Loading"
+          ) : (
+            <div className="daily-container color1">
+              <div className="question-date">{date}</div>
+              <div className="question-option">
+                <h1>
+                  <Question
+                    participants={participants}
+                    content={questionDetails.content}
+                  />
+                </h1>
+                <div className="daily-option">
+                  <OptionZero
+                    submitVote={submitVote}
+                    optionZero={questionDetails.optionzero}
+                  />
+                  <OptionOne
+                    submitVote={submitVote}
+                    optionOne={questionDetails.optionone}
+                  />
+                </div>
+                <div>
+                  {message}
+                  {message === "Waiting on transaction success..." ? (
+                    <CircularProgress color="inherit" size="1em" />
+                  ) : (
+                    ""
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
-        {/* TESTING ONLY */}
-        <button onClick={emergencyRepay}> Emergency Repay</button>
-        <ul></ul>
       </div>
     </div>
   );
