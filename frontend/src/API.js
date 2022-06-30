@@ -52,3 +52,7 @@ export async function getCurrentSalt(qid) {
   });
   return res.data.salt;
 }
+export async function getHistoricalQuestion() {
+  const res = await api.get("/api/v1/get/history");
+  return res;
+}

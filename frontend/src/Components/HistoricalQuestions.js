@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./Question.css";
-import { getCurrentQuestion } from "../API";
+import IndividualHistoricalQuestion from "./IndividualHistoricalQuestion";
 
-function Question({ participants, content }) {
-  return (
-    <div className="daily-question">
-      <div className="question">{content}</div>
-      <div className="total-participants">
-        Number of participants: {participants}
-      </div>
-    </div>
-  ); //#TODO get question from backend
+function HistoricalQuestions({ history }) {
+  return history.map((question) => {
+    return <IndividualHistoricalQuestion question={question} />;
+  });
 }
 
-export default Question;
+export default HistoricalQuestions;

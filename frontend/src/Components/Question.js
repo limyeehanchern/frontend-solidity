@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./Question.css";
-import { getCurrentQuestion } from "../API";
 
 function Question({ participants, content }) {
   return (

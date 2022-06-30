@@ -9,10 +9,11 @@ import web3 from "../web3.js";
 import CircularProgress from "@mui/material/CircularProgress";
 import KeepMountedModal from "./Modal";
 import { castVote, getCurrentQuestion, getCurrentSalt } from "../API";
+import HistoricalQuestions from "./HistoricalQuestions";
 
 function Homepage() {
   const dateOptions = { day: "numeric", month: "numeric", year: "numeric" };
-  const [date, setDate] = useState(
+  const [date] = useState(
     new Date().toLocaleString("en-GB", dateOptions).split("/").join(" . ")
   );
   const [message, setMessage] = useState("");
@@ -20,6 +21,7 @@ function Homepage() {
   const [questionDetails, setQuestionDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [qid, setQid] = useState();
+  const [history, setHistory] = useState({});
 
   /*
   Function to set question ID
@@ -33,15 +35,18 @@ function Homepage() {
   getQuestionId();
 
   /*
-  Function to fetch current question from backend
+  Function to fetch current and historical questions from backend
   */
   async function getQuestion(qid) {
     if (qid === undefined) {
       return;
     }
     getCurrentQuestion(qid).then((res) => {
-      setLoading(false);
       setQuestionDetails(res.data);
+    });
+
+    getHistoricalQuestion().then((res) => {
+      setHistory(res.data);
     });
   }
 
@@ -115,33 +120,38 @@ function Homepage() {
           {loading ? (
             "Loading"
           ) : (
-            <div className="daily-container color1">
-              <div className="question-date">{date}</div>
-              <div className="question-option">
-                <h1>
-                  <Question
-                    participants={participants}
-                    content={questionDetails.content}
-                  />
-                </h1>
-                <div className="daily-option">
-                  <OptionZero
-                    submitVote={submitVote}
-                    optionZero={questionDetails.optionzero}
-                  />
-                  <OptionOne
-                    submitVote={submitVote}
-                    optionOne={questionDetails.optionone}
-                  />
+            <div>
+              <div className="daily-container color1">
+                <div className="question-date">{date}</div>
+                <div className="question-option">
+                  <h1>
+                    <Question
+                      participants={participants}
+                      content={questionDetails.content}
+                    />
+                  </h1>
+                  <div className="daily-option">
+                    <OptionZero
+                      submitVote={submitVote}
+                      optionZero={questionDetails.optionzero}
+                    />
+                    <OptionOne
+                      submitVote={submitVote}
+                      optionOne={questionDetails.optionone}
+                    />
+                  </div>
+                  <div>
+                    {message}
+                    {message === "Waiting on transaction success..." ? (
+                      <CircularProgress color="inherit" size="1em" />
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </div>
-                <div>
-                  {message}
-                  {message === "Waiting on transaction success..." ? (
-                    <CircularProgress color="inherit" size="1em" />
-                  ) : (
-                    ""
-                  )}
-                </div>
+              </div>
+              <div className="historical-container">
+                <HistoricalQuestions history={history} />
               </div>
             </div>
           )}
