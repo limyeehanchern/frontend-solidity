@@ -7,8 +7,15 @@ const contractFile = require("../compile");
 const abi = contractFile.abi;
 const contractBytecode = contractFile.evm.bytecode.object;
 
+const testContractFile = require("../compile");
+const testAbi = testContractFile.abi;
+const testContractBytecode = testContractFile.evm.bytecode.object;
+
 // Test parameters
 const SALT = "$@F#%!@@a!%x!@v#@N!#%!";
+const UNIX = "1000000";
+const UNIX_1 = "1000001";
+const UNIX_2 = "1000002";
 const NUM_PLAYERS = 10;
 const TICKET_PRICE = 10000000000; // testing use 10000000000 gwei =  10 eth, actual use 10000000 gwei = 0.01 eth
 let game;
@@ -31,15 +38,29 @@ describe("Game Contract", function () {
   it("deploys a contract", async () => {
     // Checks that contract is deployed
     assert.ok(game.options.address);
+  });
 
-    // Check that gameMaster variable is correct
-    const gm = await game.methods.gameMaster().call({ from: accounts[0] });
-    console.log("GameMaster contract: ", gm);
-    assert.equal(gm, accounts[0]);
+  it("marks caller as gameMaster", async () => {
+    const manager = await game.methods.gameMaster().call();
+    assert.equal(manager, accounts[0]);
+  });
 
-    // Check if constructor argument was well received
+  it("constructor argument well received", async () => {
     const tp = await game.methods.ticketPrice().call();
     assert.equal(tp, TICKET_PRICE);
+  });
+
+  it("test hasher()", async () => {
+    // Hashing the player's address + vote (0,1) + secret salt + unix
+    commitHash = web3.utils.soliditySha3(
+      { t: "address", v: accounts[0] },
+      { t: "uint256", v: 0 },
+      { t: "string", v: SALT },
+      { t: "uint256", v: UNIX }
+    );
+
+    const hash = await game.methods.hasher(accounts[0], 0, SALT, UNIX).call();
+    assert.equal(hash, commitHash);
   });
 
   it("allows one account to vote", async () => {
@@ -47,7 +68,8 @@ describe("Game Contract", function () {
     commitHash = web3.utils.soliditySha3(
       { t: "address", v: accounts[0] },
       { t: "uint256", v: 0 },
-      { t: "string", v: SALT }
+      { t: "string", v: SALT },
+      { t: "uint256", v: UNIX }
     );
     // Sending vote with hashed
     await game.methods
@@ -90,7 +112,8 @@ describe("Game Contract", function () {
       commitHash = web3.utils.soliditySha3(
         { t: "address", v: accounts[i] },
         { t: "uint256", v: choice },
-        { t: "string", v: SALT }
+        { t: "string", v: SALT },
+        { t: "uint256", v: UNIX }
       );
       await game.methods.vote(commitHash).send({
         from: accounts[i],
@@ -161,12 +184,13 @@ describe("Game Contract", function () {
       }
 
       // Populating votesArray
-      votesArray.push([accounts[i].toString(), choice, SALT]);
+      votesArray.push([accounts[i].toString(), choice, SALT, UNIX]);
 
       commitHash = web3.utils.soliditySha3(
         { t: "address", v: accounts[i] },
         { t: "uint256", v: choice },
-        { t: "string", v: SALT }
+        { t: "string", v: SALT },
+        { t: "uint256", v: UNIX }
       );
 
       await game.methods.vote(commitHash).send({
