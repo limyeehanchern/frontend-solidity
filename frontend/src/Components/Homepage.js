@@ -21,13 +21,20 @@ function Homepage() {
   const [loading, setLoading] = useState(true);
   const [qid, setQid] = useState();
 
-  async function getAllAccounts() {
-    const accounts = await web3.eth.getAccounts();
+  /*
+  Function to set question ID
+  */
+  async function getQuestionId() {
     setQid(await Contract.methods.Qid().call());
   }
+  /*
+  Invoking function to get accounts to get question ID
+  */
+  getQuestionId();
 
-  getAllAccounts();
-
+  /*
+  Function to fetch current question from backend
+  */
   async function getQuestion(qid) {
     if (qid === undefined) {
       return;
@@ -38,6 +45,9 @@ function Homepage() {
     });
   }
 
+  /*
+ usEffect to invoke getting of current question in the event qid is changed
+  */
   useEffect(() => {
     getQuestion(qid);
   }, [qid]);
@@ -53,10 +63,6 @@ function Homepage() {
     return func;
     // setParticipants(0);
   }, [message]);
-
-  /*
-  Salt is currently hard coded, this salt must be stored in the database and fetched from DB to BE to FE.
-  */
 
   /*
   On submitVote, the message will be changed to indicate that it is loading, a commitHash string is created
