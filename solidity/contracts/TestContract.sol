@@ -1,30 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.15;
 
+import "./Contract.sol";
 
-contract MinorityGame {
-    address payable public gameMaster;
-    uint public ticketPrice;
-    mapping(bytes32 => bool) public commitMap;
-    address payable[] public players;
-    address payable[] opt0;
-    address payable[] opt1;
-    uint public Qid;
-    uint private ticketLimit;
-    
-    struct Vote {
-        address _address;
-        uint option;
-        string salt;
-        uint unix;
-    }
 
-    constructor (uint _ticketPrice){
-        gameMaster = payable(msg.sender);
-        // Vote limits
-        // ticketLimit = 5;
-        ticketPrice = _ticketPrice;
-        Qid = 1;
+contract TestMinorityGame is MinorityGame{
+    constructor(uint _ticketPrice) fooOwned (_ticketPrice) {
     }
 
     modifier onlyGameMaster() {
