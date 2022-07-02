@@ -52,7 +52,6 @@ function Homepage() {
     });
 
     await getHistoricalQuestions(qid).then((res) => {
-      console.log(typeof res.data);
       setHistory(Object.values(res.data));
     });
   }

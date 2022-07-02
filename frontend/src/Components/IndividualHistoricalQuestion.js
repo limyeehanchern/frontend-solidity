@@ -2,14 +2,19 @@ import React, { useState } from "react";
 import "./Question.css";
 
 function IndividualHistoricalQuestion({ question }) {
-  console.log(question);
   const [clickedReveal, setClickedReveal] = useState(false);
 
+  /*
+  Handling clicking of historical option
+  */
   function handleClick(e) {
     e.preventDefault();
     setClickedReveal(true);
   }
 
+  /*
+  Getting different colours for background
+  */
   function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);

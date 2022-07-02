@@ -22,7 +22,7 @@ function Admin() {
   }, []);
 
   /*
-  emergencyRepay for testing at the moment
+  Emergency refund of all funds manually by administrator
   */
   async function clickEmergencyRepay(e) {
     if (window.confirm("Perform Emergency Repay?") === false) {
@@ -30,14 +30,13 @@ function Admin() {
     }
     e.preventDefault();
     const accounts = await web3.eth.getAccounts();
-    console.log("emergencyRepay ran");
     await Contract.methods
       .emergencyRepay()
       .send({ from: accounts[0], gas: 3000000 });
   }
 
   /*
-  clickReveal for testing at the moment
+  clickReveal for manual ending of game by administrator
   */
   async function clickReveal(e) {
     if (window.confirm("Perform Reveal?") === false) {
@@ -53,16 +52,14 @@ function Admin() {
       setMessage("Transaction completed");
     }
 
-    try {
-      reveal(revealPassword, qid).then((res) => {
-        console.log(res.data.map(Object.values));
-        submitToSmartContract(res.data.map(Object.values));
-      });
-    } catch {
-      setMessage("Password incorrect");
-    }
+    reveal(revealPassword, qid).then((res) => {
+      submitToSmartContract(res.data.map(Object.values));
+    });
   }
 
+  /*
+  Submitting of 
+  */
   function handleSubmit() {
     const { content, optionzero, optionone, password } = details;
     postQuestion(content, optionzero, optionone, password);

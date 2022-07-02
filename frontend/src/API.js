@@ -12,9 +12,6 @@ export async function castVote(address, option, unix, salt, qid) {
       salt: salt,
       qid: qid,
     })
-    .then((res) => {
-      console.log(res);
-    })
     .catch((error) => {
       console.log(error);
     });
@@ -29,11 +26,9 @@ export async function postQuestion(content, optionzero, optionone, password) {
       salt: (Math.random() + 1).toString(36).substring(2),
       password: web3.utils.soliditySha3(password),
     })
-    .then((res) => {
-      console.log("question posted");
-    })
+
     .catch((error) => {
-      console.log("error");
+      console.log(error);
     });
 }
 
