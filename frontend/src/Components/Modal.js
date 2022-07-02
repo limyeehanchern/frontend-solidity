@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import "./Modal.css";
 
 const style = {
   position: "absolute",
@@ -58,6 +57,8 @@ export default function KeepMountedModal() {
             <br />Ξ The game is renewed weekly
             <br />
             <br />Ξ Game Master's commission of only 5%
+            <br />
+            <br />Ξ Rinkeby ETH used, currency is not worth any value
           </Typography>
           <Button onClick={handleClose}> Close</Button>
         </Box>

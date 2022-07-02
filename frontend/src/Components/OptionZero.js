@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./Option.css";
 
 function OptionZero({ submitVote, optionZero }) {
-  //#TODO get question from backend
   const [option] = useState(optionZero);
+  /*
+  Handling voting function 
+  */
   async function handleClick(e) {
     e.preventDefault();
     if (
@@ -14,7 +16,6 @@ function OptionZero({ submitVote, optionZero }) {
       return;
     }
     submitVote(0);
-    console.log("optionzero clicked");
   }
   return (
     <div>

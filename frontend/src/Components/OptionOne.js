@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./Option.css";
 
 function OptionOne({ submitVote, optionOne }) {
-  //#TODO get question from backend
   const [option] = useState(optionOne);
+  /*
+  Handling voting function 
+  */
   async function handleClick(e) {
     e.preventDefault();
     if (
@@ -14,7 +16,6 @@ function OptionOne({ submitVote, optionOne }) {
       return;
     }
     submitVote(1);
-    console.log(option);
   }
   return (
     <div>

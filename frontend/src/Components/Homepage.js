@@ -8,7 +8,12 @@ import Contract from "../Contract";
 import web3 from "../web3.js";
 import CircularProgress from "@mui/material/CircularProgress";
 import KeepMountedModal from "./Modal";
-import { castVote, getCurrentQuestion, getCurrentSalt } from "../API";
+import {
+  castVote,
+  getCurrentQuestion,
+  getCurrentSalt,
+  getHistoricalQuestions,
+} from "../API";
 import HistoricalQuestions from "./HistoricalQuestions";
 
 function Homepage() {
@@ -21,7 +26,7 @@ function Homepage() {
   const [questionDetails, setQuestionDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [qid, setQid] = useState();
-  const [history, setHistory] = useState({});
+  const [history, setHistory] = useState([]);
 
   /*
   Function to set question ID
@@ -41,12 +46,13 @@ function Homepage() {
     if (qid === undefined) {
       return;
     }
-    getCurrentQuestion(qid).then((res) => {
+    await getCurrentQuestion(qid).then((res) => {
       setQuestionDetails(res.data);
+      setLoading(false);
     });
 
-    getHistoricalQuestion().then((res) => {
-      setHistory(res.data);
+    await getHistoricalQuestions(qid).then((res) => {
+      setHistory(Object.values(res.data));
     });
   }
 
@@ -85,17 +91,17 @@ function Homepage() {
     const commitHash = web3.utils.soliditySha3(
       { t: "address", v: accounts[0] },
       { t: "uint256", v: option },
-      { t: "string", v: salt },
-      { t: "uint256", v: unix }
+      { t: "uint256", v: unix },
+      { t: "string", v: salt }
     );
     // Sending vote with hashed
     try {
-      // await Contract.methods
-      //   .vote(commitHash)
-      //   .send({ from: accounts[0], value: web3.utils.toWei("0.01", "ether") });
+      await Contract.methods
+        .vote(commitHash)
+        .send({ from: accounts[0], value: web3.utils.toWei("0.01", "ether") });
 
       // Sending data to backend to DB
-      castVote(accounts[0], option, unix, salt);
+      castVote(accounts[0], option, unix, salt, qid);
 
       setMessage("You have submitted your vote");
     } catch {
@@ -151,6 +157,7 @@ function Homepage() {
                 </div>
               </div>
               <div className="historical-container">
+                <div className="history">History</div>
                 <HistoricalQuestions history={history} />
               </div>
             </div>

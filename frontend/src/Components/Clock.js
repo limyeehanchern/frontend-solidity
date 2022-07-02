@@ -3,7 +3,6 @@ import "./Clock.css";
 
 function Clock(props) {
   let dateOptions = { day: "numeric", month: "numeric", year: "numeric" };
-
   let timeOptions = { hour: "numeric", minute: "numeric", second: "numeric" };
   timeOptions.timeZoneName = "short";
   const [time, setTime] = useState(
@@ -20,7 +19,9 @@ function Clock(props) {
       new Date().toLocaleString("en-GB", dateOptions).split("/").join(" . ")
     );
   }
-
+  /*
+  useEffect to set time every second
+  */
   useEffect(() => {
     setInterval(() => tick(), 1000);
   });

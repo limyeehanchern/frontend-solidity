@@ -12,7 +12,8 @@ const testAbi = testContractFile.abi;
 const testContractBytecode = testContractFile.evm.bytecode.object;
 
 // Test parameters
-const SALT = "$@F#%!@@a!%x!@v#@N!#%!";
+// const SALT = "123";
+const SALT = "tzbp3kptks";
 const UNIX = "1000000";
 const UNIX_1 = "1000001";
 const UNIX_2 = "1000002";
@@ -55,21 +56,26 @@ describe("Game Contract", function () {
     commitHash = web3.utils.soliditySha3(
       { t: "address", v: accounts[0] },
       { t: "uint256", v: 0 },
+      { t: "uint256", v: UNIX },
       { t: "string", v: SALT },
-      { t: "uint256", v: UNIX }
     );
 
-    const hash = await game.methods.hasher(accounts[0], 0, SALT, UNIX).call();
+    const hash = await game.methods.hasher(accounts[0], 0, UNIX, SALT).call();
     assert.equal(hash, commitHash);
   });
 
   it("allows one account to vote", async () => {
+    const qidStart = await game.methods
+      .Qid()
+      .call();
+
+    assert.equal(qidStart, 1);
     // Hashing the player's address + vote (0,1) + secret salt
     commitHash = web3.utils.soliditySha3(
       { t: "address", v: accounts[0] },
       { t: "uint256", v: 0 },
-      { t: "string", v: SALT },
-      { t: "uint256", v: UNIX }
+      { t: "uint256", v: UNIX },
+      { t: "string", v: SALT }
     );
     // Sending vote with hashed
     await game.methods
@@ -96,6 +102,12 @@ describe("Game Contract", function () {
     await game.methods
       .emergencyRepay()
       .send({ from: accounts[0], gas: 3000000 });
+
+    const qidEnd = await game.methods
+      .Qid()
+      .call();
+
+    assert.equal(qidEnd, 2);
   });
 
   it("allows multiple accounts to enter with emergencyRepay", async () => {
@@ -171,6 +183,11 @@ describe("Game Contract", function () {
   });
 
   it("only manager can call winner & reveal function works", async () => {
+    // Assert that qid is initialised to be 1
+    const qidStart = await game.methods
+      .Qid()
+      .call();
+    assert.equal(qidStart, 1);
     const votesArray = [];
 
     // For loop to submit votes of n players
@@ -184,13 +201,13 @@ describe("Game Contract", function () {
       }
 
       // Populating votesArray
-      votesArray.push([accounts[i].toString(), choice, SALT, UNIX]);
+      votesArray.push([accounts[i].toString(), choice, UNIX, SALT]);
 
       commitHash = web3.utils.soliditySha3(
         { t: "address", v: accounts[i] },
         { t: "uint256", v: choice },
-        { t: "string", v: SALT },
-        { t: "uint256", v: UNIX }
+        { t: "uint256", v: UNIX },
+        { t: "string", v: SALT }
       );
 
       await game.methods.vote(commitHash).send({
@@ -229,6 +246,13 @@ describe("Game Contract", function () {
     await game.methods
       .reveal(votesArray)
       .send({ from: accounts[0], gas: 3000000 });
+
+    
+    // Assert that Qid is increased by 1
+    const qidEnd = await game.methods
+        .Qid()
+        .call();
+    assert.equal(qidEnd, 2);
 
     // #TODO @YEEHAN
     // Complete the rest of the test for the reveal function, ensure

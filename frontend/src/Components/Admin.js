@@ -1,39 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../App.css";
 import Clock from "./Clock";
 import web3 from "../web3";
 import Contract from "../Contract";
-import { postQuestion } from "../API";
+import { postQuestion, reveal } from "../API";
 
 function Admin() {
   const [details, setDetails] = useState({});
+  const [revealPassword, setRevealPassword] = useState("");
+  const [data, setData] = useState([]);
+  const [qid, setQid] = useState();
+  const [message, setMessage] = useState("");
+
+  async function temp() {
+    const q = await Contract.methods.Qid().call();
+    setQid(q);
+  }
+
+  useEffect(() => {
+    temp();
+  }, []);
 
   /*
-  emergencyRepay for testing at the moment
+  Emergency refund of all funds manually by administrator
   */
-  async function clickEmergencyRepay() {
+  async function clickEmergencyRepay(e) {
     if (window.confirm("Perform Emergency Repay?") === false) {
       return;
     }
+    e.preventDefault();
     const accounts = await web3.eth.getAccounts();
-    console.log("emergencyRepay ran");
     await Contract.methods
       .emergencyRepay()
       .send({ from: accounts[0], gas: 3000000 });
   }
 
   /*
-  clickReveal for testing at the moment
+  clickReveal for manual ending of game by administrator
   */
-  async function clickReveal() {
+  async function clickReveal(e) {
     if (window.confirm("Perform Reveal?") === false) {
       return;
     }
+    e.preventDefault();
+    setMessage("Waiting on transaction...");
+    const accounts = await web3.eth.getAccounts();
+    async function submitToSmartContract(data) {
+      await Contract.methods
+        .reveal(data)
+        .send({ from: accounts[0], gas: 3000000 });
+      setMessage("Transaction completed");
+    }
+
+    reveal(revealPassword, qid).then((res) => {
+      submitToSmartContract(res.data.map(Object.values));
+    });
   }
 
+  /*
+  Submitting of 
+  */
   function handleSubmit() {
-    const { content, optionzero, optionone } = details;
-    postQuestion(content, optionzero, optionone);
+    const { content, optionzero, optionone, password } = details;
+    postQuestion(content, optionzero, optionone, password);
   }
 
   return (
@@ -47,7 +76,6 @@ function Admin() {
         <div className="main-container">
           <div> Submit new question </div>
           <form>
-            <label htmlFor="email">content:</label>
             <input
               type="text"
               name="content"
@@ -56,7 +84,6 @@ function Admin() {
                 setDetails({ ...details, content: e.target.value })
               }
             />
-            <label htmlFor="email">option zero:</label>
             <input
               type="text"
               name="optionzero"
@@ -65,7 +92,6 @@ function Admin() {
                 setDetails({ ...details, optionzero: e.target.value })
               }
             />
-            <label htmlFor="email">option one:</label>
             <input
               type="text"
               name="optionone"
@@ -74,12 +100,45 @@ function Admin() {
                 setDetails({ ...details, optionone: e.target.value })
               }
             />
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              onChange={(e) =>
+                setDetails({ ...details, password: e.target.value })
+              }
+            />
             <button onClick={handleSubmit}> Submit</button>
           </form>
           <br />
-          <div onClick={clickEmergencyRepay}>emergencyRepay</div>
+          <form>
+            <label>emergencyRepay</label>
+            <button
+              onClick={(e) => {
+                clickEmergencyRepay(e);
+              }}
+            >
+              {" "}
+              Emergency Repay
+            </button>
+          </form>
           <br />
-          <div onClick={clickReveal}>reveal</div>
+          <form>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              onChange={(e) => setRevealPassword(e.target.value)}
+            />
+            <button
+              onClick={(e) => {
+                clickReveal(e);
+              }}
+            >
+              Reveal
+            </button>
+            {message}
+          </form>
         </div>
       </div>
     </div>
