@@ -58,6 +58,8 @@ export default function KeepMountedModal() {
             <br />Ξ The game is renewed weekly
             <br />
             <br />Ξ Game Master's commission of only 5%
+            <br />
+            <br />Ξ Rinkeby ETH used, currency is not worth any value
           </Typography>
           <Button onClick={handleClose}> Close</Button>
         </Box>

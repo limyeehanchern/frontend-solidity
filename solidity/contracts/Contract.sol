@@ -11,12 +11,20 @@ contract MinorityGame {
     address payable[] opt1;
     uint public Qid;
     uint private ticketLimit;
+
+    bool public unequalPlayerVoteLength = false;
+    bool public optionNotCorrect = false;
+    bool public commitRevealError = false;
+    bool public payoutLengthError = false;
+
+    uint public length0 = 0;
+    uint public length1 = 0;
     
     struct Vote {
         address _address;
         uint option;
-        string salt;
         uint unix;
+        string salt;
     }
 
     constructor (uint _ticketPrice){
@@ -30,6 +38,14 @@ contract MinorityGame {
     modifier onlyGameMaster() {
         require(msg.sender == gameMaster);
         _;
+    }
+
+    modifier resetContractState(){
+        _;
+        players = new address payable[](0);
+        opt0 = new address payable[](0);
+        opt1 = new address payable[](0);
+        Qid+= 1;
     }
 
     // Vote is called by participants to commit their votes (and pay)
@@ -46,13 +62,11 @@ contract MinorityGame {
     }
 
     // Revert function that is called when game fails for any reason
-    function emergencyRepay() public payable onlyGameMaster{
+
+    function emergencyRepay() public payable onlyGameMaster resetContractState{
         for(uint i; i < players.length; i++){
             players[i].transfer(ticketPrice * 1 gwei);
             }
-        // Resetting contract state
-        players = new address payable[](0);
-        Qid++;
         return;
     }
 
@@ -60,9 +74,10 @@ contract MinorityGame {
     // 1. Check length of players = length of votes
     // 2. Double check votes sent in from backend against the commitMap
     // 3. If there are no discrepencies, proceed to distribute Prize
-    function reveal(Vote[] memory votes) payable external {
+    function reveal(Vote[] memory votes) payable external resetContractState{
         // First check - length of players
         if(players.length != votes.length){
+            unequalPlayerVoteLength = true;
             emergencyRepay();
         }
 
@@ -75,19 +90,24 @@ contract MinorityGame {
                 opt1.push(payable(votes[i]._address));
             }
             else{
+                optionNotCorrect = true;
                 emergencyRepay();
             }
 
             // Hash vote information
-            bytes32 _hash = hasher(votes[i]._address, votes[i].option, votes[i].salt, votes[i].unix);
+            bytes32 _hash = hasher(votes[i]._address, votes[i].option, votes[i].unix, votes[i].salt);
 
             // Second check - check against commitMap
             if (commitMap[_hash] != true){
                 // Fault in commit-reveal scheme
+                commitRevealError = true;
                 emergencyRepay();
-                return;
             }
         }
+
+        length0 = opt0.length;
+        length1 = opt1.length;
+
         // Option 1 is the minority, payout to players that chose option 1
         if(opt0.length > opt1.length){
             distributePrize(opt1);
@@ -97,13 +117,9 @@ contract MinorityGame {
             distributePrize(opt0);
         }
         else{
+            payoutLengthError = true;
             emergencyRepay();
         }
-
-        // No discrepencies, distribute prize
-        // Resetting contract state
-        players = new address payable[](0);
-        Qid++;
         return;
     }
 
@@ -127,8 +143,8 @@ contract MinorityGame {
     }
     
     // Hashing function that hashes address, option and salt
-    function hasher(address add, uint option, string memory salt, uint unix) public pure returns (bytes32){
-        return keccak256(abi.encodePacked(add, option, salt, unix));
+    function hasher(address add, uint option, uint unix, string memory salt) public pure returns (bytes32){
+        return keccak256(abi.encodePacked(add, option, unix, salt));
     }
 
     // Return the number of players participating

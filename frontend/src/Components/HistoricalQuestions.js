@@ -3,6 +3,7 @@ import "./Question.css";
 import IndividualHistoricalQuestion from "./IndividualHistoricalQuestion";
 
 function HistoricalQuestions({ history }) {
+  console.log(history);
   return history.map((question) => {
     return <IndividualHistoricalQuestion question={question} />;
   });

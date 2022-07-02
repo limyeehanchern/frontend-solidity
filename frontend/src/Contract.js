@@ -1,10 +1,16 @@
 import web3 from "./web3.js";
 
-const address = "0x614B40b7d91Cecd2b4B854e0AAe0787BC6816baF";
+const address = "0xeD55776b011C343De00cFbA265F4ce1C38c2417a";
 
 const abi = [
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_ticketPrice",
+        type: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
@@ -30,6 +36,19 @@ const abi = [
       },
     ],
     name: "commitMap",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "commitRevealError",
     outputs: [
       {
         internalType: "bool",
@@ -76,6 +95,92 @@ const abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "add",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "option",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "unix",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "salt",
+        type: "string",
+      },
+    ],
+    name: "hasher",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "length0",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "length1",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "optionNotCorrect",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "payoutLengthError",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "",
         type: "uint256",
@@ -107,6 +212,11 @@ const abi = [
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "unix",
+            type: "uint256",
+          },
+          {
             internalType: "string",
             name: "salt",
             type: "string",
@@ -123,6 +233,32 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "ticketPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "unequalPlayerVoteLength",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "bytes32",
@@ -136,5 +272,4 @@ const abi = [
     type: "function",
   },
 ];
-
 export default new web3.eth.Contract(abi, address);

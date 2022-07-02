@@ -1,4 +1,5 @@
 import axios from "axios";
+import web3 from "./web3";
 
 const api = axios.create({ baseURL: "http://localhost:5000" });
 
@@ -9,7 +10,7 @@ export async function castVote(address, option, unix, salt, qid) {
       option: option,
       unix: unix,
       salt: salt,
-      qid: 1,
+      qid: qid,
     })
     .then((res) => {
       console.log(res);
@@ -19,13 +20,14 @@ export async function castVote(address, option, unix, salt, qid) {
     });
 }
 
-export async function postQuestion(content, optionzero, optionone) {
+export async function postQuestion(content, optionzero, optionone, password) {
   await api
     .post("/api/v1/admin/postquestion", {
       content: content,
       optionzero: optionzero,
       optionone: optionone,
       salt: (Math.random() + 1).toString(36).substring(2),
+      password: web3.utils.soliditySha3(password),
     })
     .then((res) => {
       console.log("question posted");
@@ -52,7 +54,19 @@ export async function getCurrentSalt(qid) {
   });
   return res.data.salt;
 }
-export async function getHistoricalQuestion() {
-  const res = await api.get("/api/v1/get/history");
+export async function getHistoricalQuestions(qid) {
+  const res = await api.get("/api/v1/get/history", {
+    params: {
+      qid: qid,
+    },
+  });
+  return res;
+}
+
+export async function reveal(password, qid) {
+  const res = await api.post("/api/v1/admin/reveal", {
+    password: password,
+    qid: qid,
+  });
   return res;
 }
