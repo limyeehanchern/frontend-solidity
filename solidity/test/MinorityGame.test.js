@@ -213,16 +213,23 @@ describe("Game Contract", function () {
     // Assert that qid is initialised to be 1
     const qidStart = await game.methods.Qid().call();
     assert.equal(qidStart, 1);
-    const votesArray = [];
 
-    // For loop to submit votes of n players
-    for (i = 0; i < NUM_PLAYERS; i++) {
+    // reveal() argument - votesArray
+    const votesArray = [];
+    let opt0 = [];
+    let opt1 = [];
+    let winningOpt;
+
+    // For loop to submit votes of n players (excluding gameMaster)
+    for (i = 1; i < NUM_PLAYERS; i++) {
       // Randomise choices with biases towards option 1
       let choice;
       if (Math.random() < 0.3) {
         choice = 0;
+        opt0.push(accounts[i].toString());
       } else {
         choice = 1;
+        opt0.push(accounts[i].toString());
       }
 
       // Populating votesArray
@@ -235,6 +242,7 @@ describe("Game Contract", function () {
         { t: "string", v: SALT }
       );
 
+      // Call vote()
       await game.methods.vote(commitHash).send({
         from: accounts[i],
         value: web3.utils.toWei("10", "ether"),
@@ -252,8 +260,8 @@ describe("Game Contract", function () {
 
     // Assert that players are pushed into players array in order
     let player;
-    for (i = 0; i < NUM_PLAYERS; i++) {
-      player = await game.methods.players(i).call({ from: accounts[i] });
+    for (i = 1; i < NUM_PLAYERS; i++) {
+      player = await game.methods.players(i - 1).call({ from: accounts[i] });
       assert.equal(accounts[i], player);
     }
 
@@ -261,9 +269,16 @@ describe("Game Contract", function () {
     const playersNumber = await game.methods
       .getPlayersNumber()
       .call({ from: accounts[0] });
-    assert.equal(playersNumber, 10);
+    assert.equal(playersNumber, NUM_PLAYERS - 1);
 
-    // console.log(votesArray);
+    // Determine winning opt
+    if (opt0.length < opt1.length) {
+      winningOpt = opt0;
+    } else if (opt0.length > opt1.length) {
+      winningOpt = opt1;
+    } else {
+      winningOpt = false;
+    }
 
     // Manager calls reveal function
     await game.methods
@@ -274,17 +289,66 @@ describe("Game Contract", function () {
     const qidEnd = await game.methods.Qid().call();
     assert.equal(qidEnd, 2);
 
+    // Assert that all funds are returned correctly
+    for (i = 1; i < NUM_PLAYERS; i++) {
+      // If draw, assert ether is repaid
+      if (!winningOpt) {
+        // Assert ether is repaid
+        await (async () => {
+          const bal = await web3.eth.getBalance(accounts[i]);
+          let balanceEther = Math.round(
+            web3.utils.fromWei(bal.toString(), "ether")
+          );
+          assert.equal(balanceEther, 100);
+        })();
+
+        continue;
+      }
+
+      // If in winning team, assert earn
+      // console.log(winningOpt.length);
+      // console.log(opt0.length);
+      // console.log(opt1.length);
+      // if (winningOpt.includes(votesArray[i][0])) {
+      //   await (async () => {
+      //     const bal = await web3.eth.getBalance(accounts[i]);
+      //     let balanceEther = Math.round(
+      //       web3.utils.fromWei(bal.toString(), "ether")
+      //     );
+      //     // console.log("win", balanceEther);
+      //     // assert.equal(balanceEther, 90);
+      //   })();
+      //
+      //   continue;
+      // } else {
+      //   // If in losing team, Assert ether is lost
+      //   await (async () => {
+      //     const bal = await web3.eth.getBalance(accounts[i]);
+      //     let balanceEther = Math.round(
+      //       web3.utils.fromWei(bal.toString(), "ether")
+      //     );
+      //     // console.log("lose", balanceEther);
+      //     // assert.equal(balanceEther, 90);
+      //   })();
+      //   continue;
+      // }
+
+      // Assert that no ether is left in the contract
+      const balance = await web3.eth.getBalance(game.options.address);
+      assert(balance, 0);
+    }
+
     // #TODO @YEEHAN
     // Complete the rest of the test for the reveal function, ensure
     // that the money is correctly given out to the winners accounted for
     // commission etc, ensure that the contract does not have any money too
-  });
 
-  // it("sends money to the winner and resets the players array", async () => {
-  //   await lottery.methods.enter().send({
-  //     from: accounts[0],
-  //     value: web3.utils.toWei("2", "ether"),
-  //   });
+    // it("sends money to the winner and resets the players array", async () => {
+    //   await lottery.methods.enter().send({
+    //     from: accounts[0],
+    //     value: web3.utils.toWei("2", "ether"),
+    //   });
+  });
 
   //   const initialBalance = await web3.eth.getBalance(accounts[0]);
   //   await lottery.methods.pickWinner().send({ from: accounts[0] });
