@@ -2,6 +2,22 @@
 
 # Solidity
 
+## Project Structure
+
+The simple folder structure of the solidity is explained below:
+
+| Name                           | Description                                          |
+| ------------------------------ | ---------------------------------------------------- | --- | ------------------------------------ |
+| **node_modules**               | #TODO                                                |
+| **contracts**                  | #TODO                                                |
+| **contracts/Contract.sol**     | #TODO                                                |
+| **contracts/TestContract.sol** | #TODO                                                |
+| **test/ MinorityGame.test.js** | #TODO                                                |
+| **compile.js**                 | #TODO                                                |
+| **compileTetContract.js**      | #TODO                                                |
+| **deploy.js**                  | #TODO                                                |
+| package.json                   | Contains npm dependencies as well as [build scripts] | t   | Config settings for compiling source |
+
 # Frontend
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -55,7 +71,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ## Project Structure
 
-The simple folder structure of this app is explained below:
+The folder structure of the frontend is explained below:
 
 | Name               | Description                                                                          |
 | ------------------ | ------------------------------------------------------------------------------------ | --- | ------------------------------------ |
