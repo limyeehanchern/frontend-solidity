@@ -11,14 +11,6 @@ contract MinorityGame {
     address payable[] opt1;
     uint public Qid;
     uint private ticketLimit;
-
-    bool public unequalPlayerVoteLength = false;
-    bool public optionNotCorrect = false;
-    bool public commitRevealError = false;
-    bool public payoutLengthError = false;
-
-    uint public length0 = 0;
-    uint public length1 = 0;
     
     struct Vote {
         address _address;
@@ -77,8 +69,8 @@ contract MinorityGame {
     function reveal(Vote[] memory votes) payable onlyGameMaster external resetContractState{
         // First check - length of players
         if(players.length != votes.length){
-            unequalPlayerVoteLength = true;
             emergencyRepay();
+            return;
         }
 
         for(uint i; i < votes.length; i++){
@@ -90,8 +82,8 @@ contract MinorityGame {
                 opt1.push(payable(votes[i]._address));
             }
             else{
-                optionNotCorrect = true;
                 emergencyRepay();
+                return;
             }
 
             // Hash vote information
@@ -100,13 +92,11 @@ contract MinorityGame {
             // Second check - check against commitMap
             if (commitMap[_hash] != true){
                 // Fault in commit-reveal scheme
-                commitRevealError = true;
                 emergencyRepay();
+                return;
             }
         }
 
-        length0 = opt0.length;
-        length1 = opt1.length;
 
         // Option 1 is the minority, payout to players that chose option 1
         if(opt0.length > opt1.length){
@@ -117,8 +107,8 @@ contract MinorityGame {
             distributePrize(opt0);
         }
         else{
-            payoutLengthError = true;
             emergencyRepay();
+            return;
         }
         return;
     }

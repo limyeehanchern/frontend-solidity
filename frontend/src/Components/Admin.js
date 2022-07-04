@@ -3,7 +3,7 @@ import "../App.css";
 import Clock from "./Clock";
 import web3 from "../web3";
 import Contract from "../Contract";
-import { postQuestion, reveal } from "../API";
+import { postQuestion, reveal, emergencyRepayBackend } from "../API";
 
 function Admin() {
   const [details, setDetails] = useState({});
@@ -33,6 +33,7 @@ function Admin() {
     await Contract.methods
       .emergencyRepay()
       .send({ from: accounts[0], gas: 3000000 });
+    emergencyRepayBackend(qid);
   }
 
   /*

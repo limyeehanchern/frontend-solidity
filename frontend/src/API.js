@@ -65,3 +65,10 @@ export async function reveal(password, qid) {
   });
   return res;
 }
+
+export async function emergencyRepayBackend(qid) {
+  const res = await api.post("/api/v1/admin/emergencyrepay", {
+    qid: qid,
+  });
+  return res;
+}

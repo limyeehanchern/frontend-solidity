@@ -1,4 +1,8 @@
-# Getting Started with Create React App
+# This repository consists of both solidity code folder and frontend code folder
+
+# Solidity
+
+# Frontend
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -45,29 +49,25 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Project Structure
+
+The simple folder structure of this app is explained below:
+
+| Name               | Description                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------ | --- | ------------------------------------ |
+| **public**         | Contains all the different API endpoints                                             |
+| **node_modules**   | Contains all npm dependencies                                                        |
+| **src**            | Contains API endpoints for admin functions                                           |
+| **src/Components** | Containsall the components used on the webpage                                       |
+| **src/ API**       | Contains all functions to call API                                                   |
+| **src/App**        | Contains main App component to be rendered                                           |
+| **src/Contract**   | Contains the ABI and address of the smart contract deployed on Rinkeyby test network |
+| **src/web3**       | Exports web3 object                                                                  |
+| package.json       | Contains npm dependencies as well as [build scripts]                                 | t   | Config settings for compiling source |
 
 ### Frontend
 
