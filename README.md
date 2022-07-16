@@ -1,22 +1,82 @@
 # This repository consists of both solidity code folder and frontend code folder
 
+## About The Project
+### Motivation
+This project is a portfolio project and we started this project mainly to gain experience in writing and testing a smart contract with Solidity. This project is a full-stack project and it is fully deployable. 
+
+### Idea
+The concept of this project is a simple game. There will be a question posted weekly with two polarising options. The goal of the participant is to identify the option that will have the minority votes and send in their vote. At the end of the week, the votes will be tallied and the total pool will be split equally among the participants who voted correctly (by being in the minority). Participants can send in as many votes as they wish but they have to keep in mind that their excess votes may tip the balance and result in themselves being the majority instead. 
+
+### Gameplay
+Weekly contentious question
+![image](https://user-images.githubusercontent.com/66681646/179348335-83cbe31a-39aa-4978-8186-4808db71fefb.png)
+
+Submitting the vote and paying via Metamask
+![image](https://user-images.githubusercontent.com/66681646/179348367-2410c343-f2be-4866-8e1b-88d0759428e9.png)
+
+Submitted vote
+![image](https://user-images.githubusercontent.com/66681646/179348375-91c6068e-ff7a-49f0-a5e2-c8da91c770c3.png)
+
+Historical questions that users can play offline
+![image](https://user-images.githubusercontent.com/66681646/179348407-fb59a7d4-8cb6-4a98-b7bf-aa6d7bb47dd7.png)
+
+Admin page
+![image](https://user-images.githubusercontent.com/66681646/179348411-93cb2b07-9775-44bc-b561-88130ae5aef0.png)
+
+
+## Technicalities of the project
+
+### Why Eth
+Other than the fact that we want to gain experience in writing Solidity smart contracts, we thought that using smart contracts would be a transparent method to distribute the winnings. By writing the complete game logic in the smart contract, participants are free to scrutinise the smart contract to ensure that the game is fair.
+
+### Commit-Reveal (quite technical)
+Due to the nature of smart contracts, in that even the private variables stored in the smart contracts are able to be retrieved and read, it will be impossible to maintain the secrecy of the votes during the game. The nature of the game is that we have to hide the votes until the reveal. This was an initial setback, but after much research, we applied the commit-reveal concept to our project. 
+
+The commit-reveal solution includes the commit phase and the reveal phase. This commit-reveal solution ensures that the votes are kept secret during the gameplay with the commit phase, as well as ensuring the transparency of the game with the reveal phase. During the commit phase, which is the entire period of the week where the voting is carried out, the information of the votes are stored in the smart contract in a hashed form, which is mainly hashing the information of the user's wallet address + vote + timestamp + secret salt. This comprehensive hashing will ensure that other users will not be able to identify the raw information stored on the smart contract and cheat in the game. The commit phase also stores the information in a secured database. Therefore, information is stored on both the smart contract and the database. During the reveal phase, which can be called automatically (to be implemented with a scheduler), or can be called manually on the admin page, the data from the database is fetched and submitted to the smart contract in full. The reveal function in the smart contract will perform the same hashing on the raw reveal data and authenticate against the hashed form stored in it, much like how a password is authenticated. If there are any discrepancies, the emergencyRepay function is immediately called and the game is cancelled. Therefore, the reveal phase also allows other users to scrutinise and confirm that the game is played fairly.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+### Built With
+
+This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+
+* [![Node][Node.js]]
+* [![Express][Express.js]]
+* [![React][React.js]]
+* [![Solidity]]
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
 # Solidity
 
 ## Project Structure
 
 The simple folder structure of the solidity is explained below:
 
-| Name                           | Description                                          |
-| ------------------------------ | ---------------------------------------------------- | --- | ------------------------------------ |
-| **node_modules**               | #TODO                                                |
-| **contracts**                  | #TODO                                                |
-| **contracts/Contract.sol**     | #TODO                                                |
-| **contracts/TestContract.sol** | #TODO                                                |
-| **test/ MinorityGame.test.js** | #TODO                                                |
-| **compile.js**                 | #TODO                                                |
-| **compileTetContract.js**      | #TODO                                                |
-| **deploy.js**                  | #TODO                                                |
-| package.json                   | Contains npm dependencies as well as [build scripts] | t   | Config settings for compiling source |
+node_modules\
+contracts\
+  Contract.sol
+  TestContract.sol
+ test\
+  MinorityGame.test.js
+ compile.js
+ compileTestContract.js
+ deploy.js
+ package.json
+ 
+ 
+## Available Scripts
+
+In the project directory, you can run:
+
+### `npm test`
+Runs the test file MinorityGame.test.js 
+
+## Contract details
+
 
 # Frontend
 
@@ -34,10 +94,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`
 
@@ -59,33 +115,75 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
 ## Project Structure
 
 The folder structure of the frontend is explained below:
 
-| Name               | Description                                                                          |
-| ------------------ | ------------------------------------------------------------------------------------ | --- | ------------------------------------ |
-| **public**         | Contains all the different API endpoints                                             |
-| **node_modules**   | Contains all npm dependencies                                                        |
-| **src**            | Contains API endpoints for admin functions                                           |
-| **src/Components** | Containsall the components used on the webpage                                       |
-| **src/ API**       | Contains all functions to call API                                                   |
-| **src/App**        | Contains main App component to be rendered                                           |
-| **src/Contract**   | Contains the ABI and address of the smart contract deployed on Rinkeyby test network |
-| **src/web3**       | Exports web3 object                                                                  |
-| package.json       | Contains npm dependencies as well as [build scripts]                                 | t   | Config settings for compiling source |
-
-### Frontend
+public
+node_modules\
+src\
+  Components\
+  API.js
+  App.js
+  Contract.js
+  web3.js
+package.json
+  
 
 https://stackoverflow.com/questions/66952972/cannot-add-web3-to-react-project?rq=1
 Refer above to fix BREAKING CHANGE problem when importing web3 to frontend
+
+
+
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+This is an example of how you may give instructions on setting up your project locally.
+To get a local copy up and running follow these simple example steps.
+
+
+### Installation
+
+_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/limyeehanchern/limmy.git
+   ```
+2. Install NPM packages in both frontend and solidity folders
+   ```sh
+   npm install
+   ```
+3. Compile and deploy the project
+   ```sh
+   cd solidity
+   node compile.js
+   node deploy.js
+   ```
+4. Copy the contract address on the console and change directory to frontend\src\Contract.js, paste the contract address in the file.
+
+5. Start the frontend
+   ```sh
+   cd frontend
+   npm start
+   ```
+6. Start the backend, refer to backend repo
+   ```sh
+   npm start
+   ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+<!-- CONTACT -->
+## Contact
+
+Yee Chern (Lucas) Lim - (https://www.linkedin.com/in/lucaslimyeechern/)
+Yee Han Lim - (https://www.linkedin.com/in/limyeehan/)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
