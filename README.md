@@ -62,6 +62,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 The simple folder structure of the solidity is explained below:
 
+```bash
 .
 ├── build
 ├── compile.js
@@ -74,6 +75,7 @@ The simple folder structure of the solidity is explained below:
 ├── package.json
 └── test
 └── MinorityGame.test.js
+```
 
 ## Functions implemented
 
@@ -135,6 +137,7 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 
 The folder structure of the frontend is explained below:
 
+```bash
 .
 ├── package.json
 ├── public
@@ -171,6 +174,7 @@ The folder structure of the frontend is explained below:
 ├── index.css
 ├── index.js
 └── web3.js
+```
 
 ## Additional
 
