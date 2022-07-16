@@ -47,12 +47,10 @@ The commit-reveal solution includes the commit phase and the reveal phase. This 
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
-- [![Node][node.js]]
-- [![Express][express.js]]
-- [![React][react.js]]
-- [![Solidity]]
+- Node.js
+- Express.js
+- React.js
+- Solidity
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -77,6 +75,8 @@ The simple folder structure of the solidity is explained below:
    └── MinorityGame.test.js
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Functions implemented
 
 1. vote - Vote is called by participants to commit their votes (and pay) during the commit phase
@@ -87,6 +87,8 @@ The simple folder structure of the solidity is explained below:
 6. getPlayersNumber - Returns total number of participants
 7. getBalance - Returns total balance of the smart contract, used for testing
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -94,6 +96,8 @@ In the project directory, you can run:
 ### `npm test`
 
 Runs the test file MinorityGame.test.js
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Contract details
 
@@ -132,6 +136,8 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Project Structure
 
@@ -176,12 +182,16 @@ The folder structure of the frontend is explained below:
 └── web3.js
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Additional
 
 https://stackoverflow.com/questions/66952972/cannot-add-web3-to-react-project?rq=1
 Refer above to fix BREAKING CHANGE problem when importing web3 to frontend
 
 <!-- GETTING STARTED -->
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Getting Started
 
