@@ -74,7 +74,7 @@ The simple folder structure of the solidity is explained below:
 ├── package-lock.json
 ├── package.json
 └── test
-└── MinorityGame.test.js
+   └── MinorityGame.test.js
 ```
 
 ## Functions implemented
