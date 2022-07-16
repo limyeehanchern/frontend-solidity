@@ -2,7 +2,7 @@
 
 ## About The Project
 ### Motivation
-This project is a portfolio project and we started this project mainly to gain experience in writing and testing a smart contract with Solidity. This project is a full-stack project and it is fully deployable. 
+This project is done by Lim Yee Chern and Lim Yee Han. We have named it 'limmy' as it sounds like our common name. This project is a portfolio project and we started this project mainly to gain experience in writing and testing a smart contract with Solidity. This project is a full-stack project and it is fully deployable. 
 
 ### Idea
 The concept of this project is a simple game. There will be a question posted weekly with two polarising options. The goal of the participant is to identify the option that will have the minority votes and send in their vote. At the end of the week, the votes will be tallied and the total pool will be split equally among the participants who voted correctly (by being in the minority). Participants can send in as many votes as they wish but they have to keep in mind that their excess votes may tip the balance and result in themselves being the majority instead. 
