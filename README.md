@@ -72,6 +72,15 @@ contracts/
  deploy.js
  package.json
  
+## Functions implemented
+1. vote - Vote is called by participants to commit their votes (and pay) during the commit phase
+2. emergencyRepay - Revert function that is called when game fails for any reason
+3. reveal - Called by game master or scheduler to end the game and distribute the prizes during reveal phase
+4. distributePrize - Called by reveal function if there are no discrepancies in the voting phase
+5. hasher - Hasher function
+6. getPlayersNumber - Returns total number of participants
+7. getBalance - Returns total balance of the smart contract, used for testing
+
  
 ## Available Scripts
 
