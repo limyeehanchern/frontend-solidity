@@ -7,6 +7,7 @@ const contractFile = require("../compile");
 const abi = contractFile.abi;
 const contractBytecode = contractFile.evm.bytecode.object;
 const testContractFile = require("../compile");
+const { type } = require("mocha/lib/utils");
 const testAbi = testContractFile.abi;
 const testContractBytecode = testContractFile.evm.bytecode.object;
 
@@ -62,17 +63,15 @@ describe("Game Contract", function () {
       { t: "address", v: accounts[0] },
       { t: "uint256", v: 0 },
       { t: "uint256", v: UNIX },
-      { t: "string", v: SALT },
+      { t: "string", v: SALT }
     );
 
     const hash = await game.methods.hasher(accounts[0], 0, UNIX, SALT).call();
     assert.equal(hash, commitHash);
   });
 
-  it("allows one account to vote", async () => {
-    const qidStart = await game.methods
-      .Qid()
-      .call();
+  it("tests vote() and emergencyRepay() for 1 account", async () => {
+    const qidStart = await game.methods.Qid().call();
 
     assert.equal(qidStart, 1);
     // Hashing the player's address + vote (0,1) + unix + secret salt
@@ -82,10 +81,17 @@ describe("Game Contract", function () {
       { t: "uint256", v: UNIX },
       { t: "string", v: SALT }
     );
-    // Sending vote with hashed
+    // Call Vote(), passing in Hash
     await game.methods
       .vote(commitHash)
       .send({ from: accounts[0], value: web3.utils.toWei("10", "ether") });
+
+    // Assert that ether has been submitted
+    await (async () => {
+      const bal = await web3.eth.getBalance(accounts[0]);
+      balanceEther = Math.round(web3.utils.fromWei(bal.toString(), "ether"));
+      assert.equal(balanceEther, 90);
+    })();
 
     // First player equals to the first person to vote
     const player = await game.methods.players(0).call({ from: accounts[0] });
@@ -116,7 +122,7 @@ describe("Game Contract", function () {
     assert.equal(qidEnd, 2);
   });
 
-  it("allows multiple accounts to enter with emergencyRepay", async () => {
+  it("tests vote() and emergencyRepay() for MULTIPLE accounts", async () => {
     // For loop to submit votes of n players, excluding player 0 who is the manager
     for (i = 1; i < NUM_PLAYERS; i++) {
       // Randomise choices with biases towards option 1
@@ -139,15 +145,11 @@ describe("Game Contract", function () {
       });
 
       // Assert that ether has been submitted, rounding up to ignore gas fees
-      const balance = async () => {
-        const bal = await web3.eth.getBalance(accounts[i]);
-        balanceEther = Math.round(web3.utils.fromWei(bal.toString(), "ether"));
-        assert(balanceEther == 90);
-      };
-
-      await balance();
+      const bal = await web3.eth.getBalance(accounts[i]);
+      balanceEther = Math.round(web3.utils.fromWei(bal.toString(), "ether"));
+      assert.equal(balanceEther, 90);
+    
     }
-
     // Assert that players are pushed into players array in order
     let player;
     for (i = 1; i < NUM_PLAYERS; i++) {
@@ -179,9 +181,33 @@ describe("Game Contract", function () {
     // Assert that no ether is left in the contract after emergencyRepay
     const balance = await web3.eth.getBalance(game.options.address);
     assert(balance, 0);
+
+    // Assert question increment
+    const qidEnd = await game.methods.Qid().call();
+    assert.equal(qidEnd, 2);
   });
 
-  it("only manager can call winner & reveal function works", async () => {
+  it("test onlyGameMaster function modifier for emergencyRepay(), reveal()", async () => {
+    try {
+      await game.methods
+        .emergencyRepay()
+        .send({ from: accounts[1], gas: 3000000 });
+
+      assert(false);
+    } catch (err) {
+      assert(err);
+    }
+
+    try {
+      await game.methods.reveal().send({ from: accounts[1], gas: 3000000 });
+
+      assert(false);
+    } catch (err) {
+      assert(err);
+    }
+  });
+
+  it("test reveal()", async () => {
     // Assert that qid is initialised to be 1
     const qidStart = await game.methods
       .Qid()

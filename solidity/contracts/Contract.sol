@@ -73,7 +73,7 @@ contract MinorityGame {
     // 1. Check length of players = length of votes
     // 2. Double check votes sent in from backend against the commitMap
     // 3. If there are no discrepencies, proceed to distribute Prize
-    function reveal(Vote[] memory votes) payable external resetContractState{
+    function reveal(Vote[] memory votes) payable onlyGameMaster external resetContractState{
         // First check - length of players
         if(players.length != votes.length){
             emergencyRepay();
