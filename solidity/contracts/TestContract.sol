@@ -3,6 +3,12 @@ pragma solidity ^0.8.15;
 
 import "./Contract.sol";
 
+/**
+ * Test Contract
+ * 
+ * @author limyeehan
+ */
+
 
 contract TestMinorityGame is MinorityGame{
     constructor(uint _ticketPrice) fooOwned (_ticketPrice) {

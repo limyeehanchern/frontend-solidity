@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.15;
 
+/**
+ * Smart Contract
+ * 
+ * @author limyeechern
+ * @author limyeehan
+ */
+
 
 contract MinorityGame {
     address payable public gameMaster;
@@ -125,7 +132,7 @@ contract MinorityGame {
             emergencyRepay();
         }
 
-        uint winningAmount =(address(this).balance - commission) / winners.length;
+        uint winningAmount =(address(this).balance) / winners.length;
         for(uint i; i < winners.length; i++){
             winners[i].transfer(winningAmount);
         }
@@ -140,5 +147,10 @@ contract MinorityGame {
     // Return the number of players participating
     function getPlayersNumber() view public returns(uint256){
         return players.length;
+    }
+
+    // Return contract balance
+    function getBalance() public view returns (uint) {
+      return address(this).balance;
     }
 }

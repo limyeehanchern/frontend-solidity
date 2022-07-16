@@ -6,25 +6,30 @@ const Web3 = require("web3");
 const contractFile = require("../compile");
 const abi = contractFile.abi;
 const contractBytecode = contractFile.evm.bytecode.object;
-
 const testContractFile = require("../compile");
 const testAbi = testContractFile.abi;
 const testContractBytecode = testContractFile.evm.bytecode.object;
 
-// Test parameters
-// const SALT = "123";
 const SALT = "tzbp3kptks";
 const UNIX = "1000000";
 const UNIX_1 = "1000001";
 const UNIX_2 = "1000002";
-const NUM_PLAYERS = 10;
+const NUM_PLAYERS = 10 + 1;
 const TICKET_PRICE = 10000000000; // testing use 10000000000 gwei =  10 eth, actual use 10000000 gwei = 0.01 eth
 let game;
 let accounts;
-const web3 = new Web3(ganache.provider({ total_accounts: NUM_PLAYERS })); // Set number of accounts
+let web3;
+
+/**
+ * Smart Contract Testing
+ * 
+ * @author limyeechern
+ * @author limyeehan
+ */
 
 beforeEach(async function () {
   this.timeout(30000);
+  web3 = new Web3(ganache.provider({ total_accounts: NUM_PLAYERS })); // Set number of accounts
   accounts = await web3.eth.getAccounts();
   game = await new web3.eth.Contract(abi)
     .deploy({
@@ -52,7 +57,7 @@ describe("Game Contract", function () {
   });
 
   it("test hasher()", async () => {
-    // Hashing the player's address + vote (0,1) + secret salt + unix
+    // Hashing the player's address + vote (0,1) + unix + secret salt
     commitHash = web3.utils.soliditySha3(
       { t: "address", v: accounts[0] },
       { t: "uint256", v: 0 },
@@ -70,7 +75,7 @@ describe("Game Contract", function () {
       .call();
 
     assert.equal(qidStart, 1);
-    // Hashing the player's address + vote (0,1) + secret salt
+    // Hashing the player's address + vote (0,1) + unix + secret salt
     commitHash = web3.utils.soliditySha3(
       { t: "address", v: accounts[0] },
       { t: "uint256", v: 0 },
@@ -106,13 +111,14 @@ describe("Game Contract", function () {
     const qidEnd = await game.methods
       .Qid()
       .call();
-
+      
+    // qid increasing by 1
     assert.equal(qidEnd, 2);
   });
 
   it("allows multiple accounts to enter with emergencyRepay", async () => {
-    // For loop to submit votes of n players
-    for (i = 0; i < NUM_PLAYERS; i++) {
+    // For loop to submit votes of n players, excluding player 0 who is the manager
+    for (i = 1; i < NUM_PLAYERS; i++) {
       // Randomise choices with biases towards option 1
       let choice;
       if (Math.random() < 0.3) {
@@ -132,7 +138,7 @@ describe("Game Contract", function () {
         value: web3.utils.toWei("10", "ether"),
       });
 
-      // Assert that ether has been submitted
+      // Assert that ether has been submitted, rounding up to ignore gas fees
       const balance = async () => {
         const bal = await web3.eth.getBalance(accounts[i]);
         balanceEther = Math.round(web3.utils.fromWei(bal.toString(), "ether"));
@@ -144,8 +150,8 @@ describe("Game Contract", function () {
 
     // Assert that players are pushed into players array in order
     let player;
-    for (i = 0; i < NUM_PLAYERS; i++) {
-      player = await game.methods.players(i).call({ from: accounts[i] });
+    for (i = 1; i < NUM_PLAYERS; i++) {
+      player = await game.methods.players(i - 1).call({ from: accounts[i] }); // i - 1 as index 0 of smart contract players array is index 1 of accounts array
       assert.equal(accounts[i], player);
     }
 
@@ -155,29 +161,22 @@ describe("Game Contract", function () {
       .call({ from: accounts[0] });
     assert.equal(playersNumber, 10);
 
-    // Run emergencyRepay function, note that it is .send() and not .call()
+    // Run emergencyRepay function
     await game.methods
       .emergencyRepay()
       .send({ from: accounts[0], gas: 3000000 });
 
     // Assert that all funds are returned less gas fees
-    const gettingBalance = async () => {
-      for (i = 0; i < NUM_PLAYERS; i++) {
-        const balance = async () => {
-          await web3.eth.getBalance(accounts[i]).then((bal) => {
-            balanceEther = Math.round(
-              web3.utils.fromWei(bal.toString(), "ether")
-            );
-            assert(balanceEther == 100);
-          });
-        };
-        await balance();
-      }
-    };
+    for (i = 1; i < NUM_PLAYERS; i++) {
+      await web3.eth.getBalance(accounts[i]).then((bal) => {
+        balanceEther = Math.round(
+          web3.utils.fromWei(bal.toString(), "ether")
+        );
+        assert(balanceEther == 100);
+      });
+    }
 
-    await gettingBalance();
-
-    // Assert that no ether is left in the contract
+    // Assert that no ether is left in the contract after emergencyRepay
     const balance = await web3.eth.getBalance(game.options.address);
     assert(balance, 0);
   });
@@ -190,11 +189,12 @@ describe("Game Contract", function () {
     assert.equal(qidStart, 1);
     const votesArray = [];
 
-    // For loop to submit votes of n players
-    for (i = 0; i < NUM_PLAYERS; i++) {
-      // Randomise choices with biases towards option 1
-      let choice;
-      if (Math.random() < 0.3) {
+    // Testing when the minority only has 3 people, which in this case it is 30% of the participants
+    const MINORITY = 3
+    // For loop to submit votes of n players, excluding player 0 who is the manager
+    for (i = 1; i < NUM_PLAYERS; i++) {
+      // players with index 1, 2, 3 to vote for 0 and the rest to vote for 1
+      if (i <= MINORITY) {
         choice = 0;
       } else {
         choice = 1;
@@ -215,7 +215,7 @@ describe("Game Contract", function () {
         value: web3.utils.toWei("10", "ether"),
       });
 
-      // Assert that ether has been submitted
+      // Assert that ether has been submitted ignoring the gas fees by rounding
       const balance = async () => {
         const bal = await web3.eth.getBalance(accounts[i]);
         let balanceEther = Math.round(
@@ -227,10 +227,10 @@ describe("Game Contract", function () {
       await balance();
     }
 
-    // Assert that players are pushed into players array in order
+    // Assert that players are pushed into players array in order, excluding player 0 who is the manager
     let player;
-    for (i = 0; i < NUM_PLAYERS; i++) {
-      player = await game.methods.players(i).call({ from: accounts[i] });
+    for (i = 1; i < NUM_PLAYERS; i++) {
+      player = await game.methods.players(i - 1).call({ from: accounts[i] }); // i - 1 as index 0 of smart contract players array is index 1 of accounts array
       assert.equal(accounts[i], player);
     }
 
@@ -240,7 +240,12 @@ describe("Game Contract", function () {
       .call({ from: accounts[0] });
     assert.equal(playersNumber, 10);
 
-    // console.log(votesArray);
+    // Asserting that balance in smart contract is accurate before reveal
+    beforeRevealBalance = await game.methods.getBalance().call()
+    assert.equal(Math.round(
+          web3.utils.fromWei(beforeRevealBalance.toString(), "ether")
+        ), 10 * (NUM_PLAYERS - 1))
+    
 
     // Manager calls reveal function
     await game.methods
@@ -254,27 +259,39 @@ describe("Game Contract", function () {
         .call();
     assert.equal(qidEnd, 2);
 
-    // #TODO @YEEHAN
-    // Complete the rest of the test for the reveal function, ensure
-    // that the money is correctly given out to the winners accounted for
-    // commission etc, ensure that the contract does not have any money too
+    
+    // Asserting that balance in smart contract is accurate after reveal
+    afterRevealBalance = await game.methods.getBalance().call()
+    roundedAfterRevealBalance = Math.round(
+          web3.utils.fromWei(afterRevealBalance.toString(), "ether"))
+        
+    assert.equal(roundedAfterRevealBalance, 0)
+
+    // Asserting that the gameMaster has received the commission, which in this case is 5 ether
+    const commission = parseInt(web3.utils.fromWei((0.05 * beforeRevealBalance).toString(), "ether"))
+    const gmBalance = await web3.eth.getBalance(accounts[0])
+    roundedGmBalance = Math.round(
+      web3.utils.fromWei(gmBalance.toString(), "ether"))
+    assert.equal(roundedGmBalance, 100 + commission)
+
+    // Asserting that the minority voting has won the correct amount 
+    winnerProfit = parseInt(web3.utils.fromWei(((beforeRevealBalance - commission) / MINORITY).toString(), "ether"))
+    for (j = 1; j <= MINORITY; j ++){
+      const bal = await web3.eth.getBalance(accounts[j]);
+      let finalBalance = Math.round(
+        web3.utils.fromWei(bal.toString(), "ether")
+      );
+      difference = (90 + winnerProfit - finalBalance) <= 1;
+      assert.equal(difference, true)
+    }
+
+    // Asserting that the majority voters do not win anything
+    for (k = MINORITY + 1; k < NUM_PLAYERS; k++){
+      const bal = await web3.eth.getBalance(accounts[k]);
+      let finalBalance = Math.round(
+        web3.utils.fromWei(bal.toString(), "ether")
+      );
+      assert.equal(finalBalance, 90)
+    }
   });
-
-  // it("sends money to the winner and resets the players array", async () => {
-  //   await lottery.methods.enter().send({
-  //     from: accounts[0],
-  //     value: web3.utils.toWei("2", "ether"),
-  //   });
-
-  //   const initialBalance = await web3.eth.getBalance(accounts[0]);
-  //   await lottery.methods.pickWinner().send({ from: accounts[0] });
-
-  //   const finalBalance = await web3.eth.getBalance(accounts[0]);
-
-  //   const difference = finalBalance - initialBalance;
-  //   differenceEther = Math.round(
-  //     web3.utils.fromWei(difference.toString(), "ether")
-  //   );
-  //   assert(differenceEther == 2);
-  // });
 });
