@@ -61,11 +61,11 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 The simple folder structure of the solidity is explained below:
 
-node_modules\
-contracts\
+node_modules/
+contracts/
   Contract.sol
   TestContract.sol
- test\
+ test/
   MinorityGame.test.js
  compile.js
  compileTestContract.js
@@ -126,9 +126,9 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 The folder structure of the frontend is explained below:
 
 public
-node_modules\
-src\
-  Components\
+node_modules/
+src/
+  Components/
   API.js
   App.js
   Contract.js
@@ -136,10 +136,9 @@ src\
 package.json
   
 
+## Additional
 https://stackoverflow.com/questions/66952972/cannot-add-web3-to-react-project?rq=1
 Refer above to fix BREAKING CHANGE problem when importing web3 to frontend
-
-
 
 
 
@@ -187,6 +186,7 @@ _Below is an example of how you can instruct your audience on installing and set
 ## Contact
 
 Yee Chern (Lucas) Lim - (https://www.linkedin.com/in/lucaslimyeechern/)
+
 Yee Han Lim - (https://www.linkedin.com/in/limyeehan/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
