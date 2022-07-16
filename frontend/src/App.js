@@ -4,6 +4,12 @@ import Homepage from "./Components/Homepage";
 import Admin from "./Components/Admin";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+/**
+ * Frontend
+ * 
+ * @author limyeechern
+ */
+
 function App() {
   return (
     <div>
