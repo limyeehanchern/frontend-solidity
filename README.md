@@ -9,20 +9,25 @@ The concept of this project is a simple game. There will be a question posted we
 
 ### Gameplay
 Weekly contentious question
-![image](https://user-images.githubusercontent.com/66681646/179348335-83cbe31a-39aa-4978-8186-4808db71fefb.png)
+
+![image](https://user-images.githubusercontent.com/66681646/179348828-fb6854d1-ee4b-4dac-aee6-feae766aacc8.png)
 
 Submitting the vote and paying via Metamask
-![image](https://user-images.githubusercontent.com/66681646/179348367-2410c343-f2be-4866-8e1b-88d0759428e9.png)
+
+![image](https://user-images.githubusercontent.com/66681646/179348837-48661834-38fe-487b-8e2a-132225f4439c.png)
 
 Submitted vote
-![image](https://user-images.githubusercontent.com/66681646/179348375-91c6068e-ff7a-49f0-a5e2-c8da91c770c3.png)
 
-Historical questions that users can play offline
-![image](https://user-images.githubusercontent.com/66681646/179348407-fb59a7d4-8cb6-4a98-b7bf-aa6d7bb47dd7.png)
+![image](https://user-images.githubusercontent.com/66681646/179348845-526a82ae-aea4-451b-a0d7-377ebec80685.png)
+
+
+Historical questions that users can play offline by scrolling down
+
+![image](https://user-images.githubusercontent.com/66681646/179348854-8c2eb782-2a94-47c3-9018-00e196d41134.png)
+
 
 Admin page
-![image](https://user-images.githubusercontent.com/66681646/179348411-93cb2b07-9775-44bc-b561-88130ae5aef0.png)
-
+![image](https://user-images.githubusercontent.com/66681646/179348862-5d1651c1-0ea4-4fff-b631-f03cdc95e1b7.png)
 
 ## Technicalities of the project
 
