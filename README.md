@@ -4,7 +4,7 @@
 
 ### Motivation
 
-This project is done by Lim Yee Chern and Lim Yee Han. We have named it 'limmy' as it sounds like our common name. This project is a portfolio project and we started this project mainly to gain experience in writing and testing a smart contract with Solidity. This project is a full-stack project and it is fully deployable.
+This project is done by Lim Yee Chern and Lim Yee Han. We have named it 'limmy' as it sounds like our common name (hahahaha). This project is a portfolio project and we started this project mainly to gain experience in writing and testing a smart contract with Solidity. This project is a full-stack project. 
 
 ### Idea
 
@@ -33,7 +33,7 @@ Admin page
 
 ## Technicalities of the project
 
-### Why Eth
+### Why implement using Blockchain
 
 Other than the fact that we want to gain experience in writing Solidity smart contracts, we thought that using smart contracts would be a transparent method to distribute the winnings. By writing the complete game logic in the smart contract, participants are free to scrutinise the smart contract to ensure that the game is fair.
 
